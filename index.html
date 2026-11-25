@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>S.K. DESIGNER – Ladies Wear</title>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#faf5f7;--ink:#2a1f2d;--mute:#6f6272;--card:#fff;--line:#e8dce2;--accent:#8a2c5a;--on-accent:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1420;--ink:#f3e9ef;--mute:#b3a3b8;--card:#271c2c;--line:#3a2c40;--accent:#e08ab4;--on-accent:#1c1420}}
+:root[data-theme="dark"]{--bg:#1c1420;--ink:#f3e9ef;--mute:#b3a3b8;--card:#271c2c;--line:#3a2c40;--accent:#e08ab4;--on-accent:#1c1420}
+html{color-scheme:light dark;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "DM Sans",system-ui,sans-serif}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:12px 16px;z-index:5}
+h1{font:700 22px "Bodoni Moda",Georgia,serif;margin:0}
+button{font:inherit;cursor:pointer}
+.cartbtn{background:var(--accent);color:var(--on-accent);border:0;border-radius:20px;padding:8px 14px;font-weight:500}
+.hero{padding:36px 16px 20px;max-width:720px;margin:auto}
+.hero h2{font:500 clamp(30px,8vw,48px)/1.1 "Bodoni Moda",Georgia,serif;margin:0 0 10px}
+.hero p{color:var(--mute);margin:0;max-width:44ch}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;max-width:720px;margin:auto}
+.tabs button{white-space:nowrap;background:none;border:1px solid var(--line);color:var(--ink);border-radius:20px;padding:6px 14px}
+.tabs button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:8px 16px 40px;max-width:720px;margin:auto}
+@media(min-width:600px){.grid{grid-template-columns:repeat(3,1fr)}}
+.p{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;display:flex;flex-direction:column}
+.sw{aspect-ratio:4/5;display:grid;place-items:center;font:500 15px "Bodoni Moda",serif;color:rgba(255,255,255,.9)}
+.pi{padding:10px;display:flex;flex-direction:column;gap:6px;flex:1}
+.pi b{font-weight:500}.pi span{color:var(--mute)}
+select{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:6px}
+.add{margin-top:auto;background:var(--ink);color:var(--bg);border:0;border-radius:4px;padding:9px;font-weight:500}
+#drawer{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;z-index:10}
+#drawer.open{display:block}
+.sheet{position:absolute;right:0;top:0;bottom:0;width:min(400px,100%);background:var(--bg);padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px}
+.items{flex:1;overflow:auto}
+.row{display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.row small{color:var(--mute);display:block}
+.row button{background:none;border:0;color:var(--accent)}
+input{width:100%;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:10px;font:inherit}
+.wa{background:#1fa855;color:#fff;border:0;border-radius:4px;padding:13px;font-weight:700}
+.wa:disabled{opacity:.5}
+.x{align-self:flex-end;background:none;border:0;color:var(--ink);font-size:15px}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<header><h1 id="brand"></h1><button class="cartbtn" id="open">Cart (<span id="n">0</span>)</button></header>
+<section class="hero"><h2>Made for everyday elegance</h2><p>Browse the collection, add your size, and place your order on WhatsApp. We confirm payment and delivery with you directly.</p></section>
+<nav class="tabs" id="tabs" aria-label="Categories"></nav>
+<main class="grid" id="grid"></main>
+<div id="drawer"><div class="sheet" role="dialog" aria-label="Your cart">
+<button class="x" id="close">Close</button>
+<h1>Your cart</h1>
+<div class="items" id="items"></div>
+<div class="row"><b>Total</b><b id="total">₹0</b></div>
+<input id="name" placeholder="Your name" autocomplete="name">
+<input id="addr" placeholder="Delivery address and pincode" autocomplete="street-address">
+<button class="wa" id="order" disabled>Order on WhatsApp</button>
+</div></div>
+<script>
+// EDIT THESE: brand name, WhatsApp number (country code, no +), products
+const BRAND="S.K. DESIGNER", WA="919996236239";
+const P=[
+{id:1,n:"Cotton Kurti",c:"Kurtis",p:899,col:"#8a2c5a",s:["S","M","L","XL"]},
+{id:2,n:"Printed Kurti",c:"Kurtis",p:1099,col:"#a8556f",s:["S","M","L","XL"]},
+{id:3,n:"Chanderi Saree",c:"Sarees",p:2499,col:"#3f5e57",s:["Free size"]},
+{id:4,n:"Silk Blend Saree",c:"Sarees",p:3299,col:"#6b4a7a",s:["Free size"]},
+{id:5,n:"Linen Co-ord Set",c:"Co-ords",p:1799,col:"#b07a4f",s:["S","M","L"]},
+{id:6,n:"Floral Co-ord Set",c:"Co-ords",p:1999,col:"#5c7a8f",s:["S","M","L"]},
+{id:7,n:"Phulkari Dupatta",c:"Dupattas",p:699,col:"#c25a5a",s:["Free size"]},
+{id:8,n:"Georgette Dupatta",c:"Dupattas",p:549,col:"#4d6b4a",s:["Free size"]}];
+const $=i=>document.getElementById(i), fmt=v=>"₹"+v.toLocaleString("en-IN");
+let cart=[],cat="All";
+try{cart=JSON.parse(localStorage.getItem("cart")||"[]")}catch(e){}
+function save(){try{localStorage.setItem("cart",JSON.stringify(cart))}catch(e){}}
+document.title=BRAND+" – Ladies Wear";$("brand").textContent=BRAND;
+function tabs(){const cs=["All",...new Set(P.map(x=>x.c))];
+$("tabs").innerHTML=cs.map(c=>`<button aria-pressed="${c==cat}" data-c="${c}">${c}</button>`).join("");
+$("tabs").onclick=e=>{if(e.target.dataset.c){cat=e.target.dataset.c;tabs();grid()}}}
+function grid(){$("grid").innerHTML=P.filter(x=>cat=="All"||x.c==cat).map(x=>
+`<article class="p"><div class="sw" style="background:${x.col}">${x.n}</div><div class="pi"><b>${x.n}</b><span>${fmt(x.p)}</span>
+<select aria-label="Size for ${x.n}" id="s${x.id}">${x.s.map(s=>`<option>${s}</option>`).join("")}</select>
+<button class="add" data-id="${x.id}">Add to cart</button></div></article>`).join("")}
+$("grid").onclick=e=>{const id=+e.target.dataset.id;if(!id)return;
+const x=P.find(q=>q.id==id),s=$("s"+id).value,f=cart.find(q=>q.id==id&&q.s==s);
+f?f.q++:cart.push({id,s,q:1});save();draw();e.target.textContent="Added";setTimeout(()=>e.target.textContent="Add to cart",900)};
+function draw(){let t=0,n=0;
+$("items").innerHTML=cart.length?cart.map((c,i)=>{const x=P.find(q=>q.id==c.id);t+=x.p*c.q;n+=c.q;
+return `<div class="row"><div>${x.n}<small>${c.s} · Qty ${c.q} · ${fmt(x.p*c.q)}</small></div><button data-i="${i}">Remove</button></div>`}).join(""):"<p>Your cart is empty. Add a piece to get started.</p>";
+$("n").textContent=n;$("total").textContent=fmt(t);chk()}
+$("items").onclick=e=>{if(e.target.dataset.i!==undefined){cart.splice(+e.target.dataset.i,1);save();draw()}};
+function chk(){$("order").disabled=!cart.length||!$("name").value.trim()||!$("addr").value.trim()}
+$("name").oninput=$("addr").oninput=chk;
+$("open").onclick=()=>$("drawer").classList.add("open");
+$("close").onclick=()=>$("drawer").classList.remove("open");
+$("order").onclick=()=>{let t=0;const L=cart.map(c=>{const x=P.find(q=>q.id==c.id);t+=x.p*c.q;return `• ${x.n} (${c.s}) x${c.q} = ${fmt(x.p*c.q)}`});
+const m=`New order from ${BRAND} store\n${L.join("\n")}\nTotal: ${fmt(t)}\n\nName: ${$("name").value}\nAddress: ${$("addr").value}`;
+window.open("https://wa.me/"+WA+"?text="+encodeURIComponent(m),"_blank")};
+tabs();grid();draw();
+</script>
+</body>
+</html>
